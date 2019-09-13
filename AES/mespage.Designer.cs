@@ -1,4 +1,8 @@
-﻿namespace AES
+﻿using NAudio;
+using System;
+using System.IO;
+
+namespace AES
 {
     partial class mespage
     {
@@ -35,9 +39,13 @@
             this.roompasswordbox = new ns1.BunifuMetroTextbox();
             this.picture = new ns1.BunifuImageButton();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.recordbutton = new ns1.BunifuImageButton();
+            this.stopbutton = new ns1.BunifuImageButton();
             ((System.ComponentModel.ISupportInitialize)(this.sendbutton)).BeginInit();
             this.mespanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picture)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.recordbutton)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stopbutton)).BeginInit();
             this.SuspendLayout();
             // 
             // entermes
@@ -53,10 +61,10 @@
             this.entermes.LineIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(64)))));
             this.entermes.LineMouseHoverColor = System.Drawing.Color.Black;
             this.entermes.LineThickness = 3;
-            this.entermes.Location = new System.Drawing.Point(7, 541);
+            this.entermes.Location = new System.Drawing.Point(3, 542);
             this.entermes.Margin = new System.Windows.Forms.Padding(4);
             this.entermes.Name = "entermes";
-            this.entermes.Size = new System.Drawing.Size(646, 44);
+            this.entermes.Size = new System.Drawing.Size(628, 44);
             this.entermes.TabIndex = 11;
             this.entermes.Text = "Enter your message...";
             this.entermes.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
@@ -69,7 +77,7 @@
             this.sendbutton.ImageActive = null;
             this.sendbutton.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.sendbutton.InitialImage = null;
-            this.sendbutton.Location = new System.Drawing.Point(717, 541);
+            this.sendbutton.Location = new System.Drawing.Point(720, 550);
             this.sendbutton.Name = "sendbutton";
             this.sendbutton.Size = new System.Drawing.Size(33, 36);
             this.sendbutton.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -82,9 +90,9 @@
             // 
             this.mespanel.AutoScroll = true;
             this.mespanel.Controls.Add(this.roompasswordbox);
-            this.mespanel.Location = new System.Drawing.Point(3, 3);
+            this.mespanel.Location = new System.Drawing.Point(3, 4);
             this.mespanel.Name = "mespanel";
-            this.mespanel.Size = new System.Drawing.Size(761, 531);
+            this.mespanel.Size = new System.Drawing.Size(795, 531);
             this.mespanel.TabIndex = 12;
             // 
             // roompasswordbox
@@ -97,7 +105,7 @@
             this.roompasswordbox.Font = new System.Drawing.Font("Century Gothic", 9.75F);
             this.roompasswordbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.roompasswordbox.isPassword = false;
-            this.roompasswordbox.Location = new System.Drawing.Point(195, 212);
+            this.roompasswordbox.Location = new System.Drawing.Point(195, 200);
             this.roompasswordbox.Margin = new System.Windows.Forms.Padding(4);
             this.roompasswordbox.Name = "roompasswordbox";
             this.roompasswordbox.Size = new System.Drawing.Size(370, 44);
@@ -113,7 +121,7 @@
             this.picture.ImageActive = null;
             this.picture.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.picture.InitialImage = null;
-            this.picture.Location = new System.Drawing.Point(669, 541);
+            this.picture.Location = new System.Drawing.Point(681, 550);
             this.picture.Name = "picture";
             this.picture.Size = new System.Drawing.Size(33, 36);
             this.picture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -126,19 +134,55 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
+            // recordbutton
+            // 
+            this.recordbutton.BackColor = System.Drawing.Color.Snow;
+            this.recordbutton.Image = ((System.Drawing.Image)(resources.GetObject("recordbutton.Image")));
+            this.recordbutton.ImageActive = null;
+            this.recordbutton.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.recordbutton.InitialImage = null;
+            this.recordbutton.Location = new System.Drawing.Point(638, 550);
+            this.recordbutton.Name = "recordbutton";
+            this.recordbutton.Size = new System.Drawing.Size(37, 36);
+            this.recordbutton.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.recordbutton.TabIndex = 14;
+            this.recordbutton.TabStop = false;
+            this.recordbutton.Zoom = 10;
+            this.recordbutton.Click += new System.EventHandler(this.Recordbutton_Click);
+            // 
+            // stopbutton
+            // 
+            this.stopbutton.BackColor = System.Drawing.Color.Snow;
+            this.stopbutton.Image = ((System.Drawing.Image)(resources.GetObject("stopbutton.Image")));
+            this.stopbutton.ImageActive = null;
+            this.stopbutton.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.stopbutton.InitialImage = null;
+            this.stopbutton.Location = new System.Drawing.Point(638, 550);
+            this.stopbutton.Name = "stopbutton";
+            this.stopbutton.Size = new System.Drawing.Size(37, 36);
+            this.stopbutton.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.stopbutton.TabIndex = 15;
+            this.stopbutton.TabStop = false;
+            this.stopbutton.Zoom = 10;
+            this.stopbutton.Click += new System.EventHandler(this.Stopbutton_Click);
+            // 
             // mespage
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.Controls.Add(this.stopbutton);
+            this.Controls.Add(this.recordbutton);
             this.Controls.Add(this.picture);
             this.Controls.Add(this.sendbutton);
             this.Controls.Add(this.entermes);
             this.Controls.Add(this.mespanel);
             this.Name = "mespage";
-            this.Size = new System.Drawing.Size(764, 595);
+            this.Size = new System.Drawing.Size(780, 595);
             this.Load += new System.EventHandler(this.Mespage_Load);
             ((System.ComponentModel.ISupportInitialize)(this.sendbutton)).EndInit();
             this.mespanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picture)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.recordbutton)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stopbutton)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -151,5 +195,7 @@
         private ns1.BunifuImageButton picture;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private ns1.BunifuMetroTextbox roompasswordbox;
+        private ns1.BunifuImageButton recordbutton;
+        private ns1.BunifuImageButton stopbutton;
     }
 }

@@ -7,28 +7,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using NAudio.Wave;
+using System.IO;
 
 namespace AES
 {
-    public partial class message : UserControl
+    public partial class soundmessage : UserControl
     {
-        public message()
+        public soundmessage()
         {
             InitializeComponent();
         }
-        public message(string s,string account)
+        public soundmessage(byte[] s,string account)
         {
             InitializeComponent();
-            lbl.Text = s;
             accountname.Text = account;
-           
-
+            
+          
         }
-        private void Massage_Load(object sender, EventArgs e)
+        private void soundmessage_Load(object sender, EventArgs e)
         {
 
         }
 
-       
+        private void Playbutton_Click(object sender, EventArgs e)
+        {
+            
+        }
     }
 }

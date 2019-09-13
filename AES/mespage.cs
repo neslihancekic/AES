@@ -1,7 +1,6 @@
-﻿
-
-using Firebase.Database;
+﻿using Firebase.Database;
 using Firebase.Database.Query;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -11,7 +10,6 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-using System.Security.Cryptography;
 
 
 namespace AES
@@ -33,11 +31,11 @@ namespace AES
         private string bytearraytostring(byte[] a)
         {
             string newt = "";
-            for(int i = 0; i < a.Length; i++)
+            for (int i = 0; i < a.Length; i++)
             {
                 newt += Convert.ToChar(a[i]);
             }
-            
+
             return newt;
         }
         int poss = 10;
@@ -67,15 +65,17 @@ namespace AES
              message item = new AES.message(s, account);
              mespanel.Controls.Add(item);
              item.Top = poss;
-             item.Location = new Point(420, poss + mespanel.AutoScrollPosition.Y);
+             item.Location = new Point(450, poss + mespanel.AutoScrollPosition.Y);
              poss = (item.Top + item.Height + 10);
              mespanel.ScrollControlIntoView(item);
          }));
         }
         public void Addpmessage(string a, byte[] s)
         {
-            Image b = byteArrayToImage(s);
-            Invoke(new MethodInvoker(
+            try
+            {
+                Image b = byteArrayToImage(s);
+                Invoke(new MethodInvoker(
         delegate
         {
             mespanel.VerticalScroll.Value = 0;
@@ -86,25 +86,42 @@ namespace AES
             poss = (item.Top + item.Height + 10);
             mespanel.ScrollControlIntoView(item);
         }));
+            }
+            catch
+            {
+                byte[] array = { 0 };
+                Addmessage(array, a);
+            }
+
+
 
         }
         public void Addmypmessage(string a, byte[] s)
         {
-          
-            Image b = byteArrayToImage(s);
-            Invoke(new MethodInvoker(
+            try
+            {
+                Image b = byteArrayToImage(s);
+                Invoke(new MethodInvoker(
        delegate
        {
-            mespanel.VerticalScroll.Value = 0;
-            picturemessage item = new AES.picturemessage(a, b);
-            mespanel.Controls.Add(item);
-            item.Top = poss;
-            item.Left = 420;
-            //mespanel.AutoScrollPosition = new Point(0, 0);
-            item.Location = new Point(420, poss + mespanel.AutoScrollPosition.Y);
-            poss = (item.Top + item.Height + 10);
-                mespanel.ScrollControlIntoView(item);
-            }));
+           mespanel.VerticalScroll.Value = 0;
+           picturemessage item = new AES.picturemessage(a, b);
+           mespanel.Controls.Add(item);
+           item.Top = poss;
+           item.Left = 420;
+           //mespanel.AutoScrollPosition = new Point(0, 0);
+           item.Location = new Point(450, poss + mespanel.AutoScrollPosition.Y);
+           poss = (item.Top + item.Height + 10);
+           mespanel.ScrollControlIntoView(item);
+       }));
+            }
+            catch
+            {
+                byte[] array = { 0 };
+                Addmymessage(array, a);
+            }
+
+
 
         }
 
@@ -260,7 +277,7 @@ namespace AES
                 }
             });
             byte[] newByte = new byte[nbyte.Count];
-            for(int i = 0; i < nbyte.Count; i++)
+            for (int i = 0; i < nbyte.Count; i++)
             {
                 newByte[i] = nbyte[i];
             }
@@ -324,34 +341,37 @@ namespace AES
         }
         public Bitmap byteArrayToImage(byte[] byteArrayIn)
         {
+
             using (var ms = new MemoryStream(byteArrayIn))
             {
                 Bitmap bm = new Bitmap(ms);
                 return bm;
 
-              // return Image.FromStream(ms);
+                //return Image.FromStream(ms);
             }
             /* MemoryStream ms = new MemoryStream(byteArrayIn);
              Image returnImage = Image.FromStream(ms);
              return returnImage;*/
+
+
         }
 
         public void Getfile()
         {
-             openFileDialog1.Filter = "jpg files(.*jpg)|*.jpg| PNG files(.*png)|*.png| All Files(*.*)|*.*";
-             if (openFileDialog1.ShowDialog() == DialogResult.OK)
-             {
-                Bitmap picture=(Bitmap)Image.FromFile(openFileDialog1.FileName);
-                picture.SetResolution(1,1);
+            openFileDialog1.Filter = "jpg files(.*jpg)|*.jpg| PNG files(.*png)|*.png| All Files(*.*)|*.*";
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                Bitmap picture = (Bitmap)Image.FromFile(openFileDialog1.FileName);
+                picture.SetResolution(1, 1);
 
                 byte[] asciiBytesText = imageToByteArray(picture);
-              
-               
-                
+
+
+
                 Invoke((MethodInvoker)async delegate
                  {
-                     
-                     
+
+
                      string ciphertext = Encryption(asciiBytesText, key);
                      entermes.Text = "";
                      var data = new Data()
@@ -368,7 +388,7 @@ namespace AES
                              .PostAsync(data);
                      }
                  });
-             }
+            }
         }
 
         [Obsolete]
@@ -382,7 +402,7 @@ namespace AES
                     ApartmentState = ApartmentState.STA
                 };
                 threadGetFile.Start();
-               
+
 
 
             }
@@ -390,9 +410,9 @@ namespace AES
             {
                 MessageBox.Show("hata");
             }
-            
+
         }
-     
+
 
         private void Roompasswordbox_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -402,8 +422,9 @@ namespace AES
                 entermes.Visible = true;
                 picture.Visible = true;
                 sendbutton.Visible = true;
+                recordbutton.Visible = true;
                 key = roompasswordbox.Text;
-                string  n = null, l = null, t = null;
+                string n = null, l = null, t = null;
                 byte[] m = null;
 
 
@@ -414,47 +435,55 @@ namespace AES
                         .AsObservable<Data>()
                         .Subscribe(d =>
                         {
-                          try
-                          {
+                            try
+                             {
 
-                                m = Decryption(d.Object.text, key);
-                                n = d.Object.account;
-                                l = d.Object.room;
-                                t = d.Object.type;
+                            m = Decryption(d.Object.text, key);
+                            n = d.Object.account;
+                            l = d.Object.room;
+                            t = d.Object.type;
 
 
-                                if (l == chatname)
+                            if (l == chatname)
+                            {
+                                if (n == username)
                                 {
-                                    if (n == username)
+                                    if (t == "t")
                                     {
-                                        if (t == "t")
-                                        {
-                                            Addmymessage(m, n);
-
-                                        }
-                                        else if (t == "p")
-                                        {
-                                           Addmypmessage(n, m);
-                                        }
-
+                                        Addmymessage(m, n);
 
                                     }
-                                    else
+                                    else if (t == "s")
                                     {
-                                        if (t == "t")
-                                        {
-                                            Addmessage(m, n);
-                                        }
+                                         //Addmymessage(m, n);
+                                    }
+                                    else if (t == "p")
+                                    {
+                                        Addmypmessage(n, m);
+                                    }
+
+
+                                }
+                                else
+                                {
+                                    if (t == "t")
+                                    {
+                                        Addmessage(m, n);
+                                    }
+                                    else if (t == "s")
+                                    {
+                                        //Addmymessage(m, n);
+                                    }
                                         else if (t == "p")
-                                        {
-                                            Addpmessage(n, m);
-                                        }
+                                    {
+                                        Addpmessage(n, m);
                                     }
                                 }
-                          }
-                          catch
-                          {
-                          }
+                            }
+                            }
+                            catch
+                            {
+                             }
 
 
 
@@ -466,6 +495,73 @@ namespace AES
 
         }
 
+        WaveInEvent waveIn = new WaveInEvent();
+
+        WaveFileWriter writer = null;
+        
+        private string record(object sender, EventArgs a)
+        {
+            var outputFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "NAudio");
+            Directory.CreateDirectory(outputFolder);
+            var outputFilePath = Path.Combine(outputFolder, "recorded.wav");
+
+            waveIn.DataAvailable += (s, e) =>
+                {
+
+                    writer.Write(e.Buffer, 0, e.BytesRecorded);
+
+
+                    if (writer.Position > waveIn.WaveFormat.AverageBytesPerSecond * 30)
+                    {
+                        waveIn.StopRecording();
+                    }
+                };
+            
+            return outputFilePath;
+        }
+
+
+
+
+        private async void Stopbutton_Click(object sender, EventArgs e)
+        {
+            waveIn.StopRecording();
+
+                writer?.Dispose();
+                writer = null;
+
+                waveIn.Dispose();
+                
+            Program.Instance.FormClosing += (s, a) => {waveIn.StopRecording(); };
+
+            recordbutton.Visible = true;
+            stopbutton.Visible = false;
+            byte[] bytes = File.ReadAllBytes(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "NAudio","recorded.wav"));
+            string ciphersound = Encryption(bytes, key);
+            var data = new Data()
+            {
+                type = "s",
+                text = ciphersound,
+                account = username,
+                room = chatname,
+            };
+
+            using (FirebaseClient firebase = new FirebaseClient(ConfigurationManager.AppSettings["BasePath"].ToString()))
+            {
+                await firebase
+                    .Child("Messages")
+                    .PostAsync(data);
+            }
+        }
+
+        private void Recordbutton_Click(object sender, EventArgs e)
+        {
+            string outputFilePath = record(sender, e);
+            writer = new WaveFileWriter(outputFilePath, waveIn.WaveFormat);
+            waveIn.StartRecording();
+            recordbutton.Visible = false;
+            stopbutton.Visible = true;
+        }
 
         private void Entermes_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -490,11 +586,14 @@ namespace AES
                   AuthTokenAsyncFactory = () => Task.FromResult(auth)
               });*/
 
-           
+
 
             entermes.Visible = false;
             picture.Visible = false;
             sendbutton.Visible = false;
+            recordbutton.Visible = false;
+            stopbutton.Visible = false;
+
 
 
 
